@@ -209,6 +209,25 @@ proxy_password
 proxy_url
 ```
 
+### Custom Payloads
+
+If you need to create a payload that isn't supported by the library, you can do so using the `IOSConfig::Payload::Custom` class. 
+
+The construction of this payload is similar to the ready-made ones with two exceptions: You must specify the payload type and the actual structure of the payload.
+
+Example:
+
+```ruby
+payload = IOSConfig::Payload::Custom.new(payload_type: 'com.apple.app.lock', payload: { 'App' => { 'Identifier' => 'com.spotify.client' } } ).build
+```
+
+Available parameters:
+
+```ruby
+payload_type    # string
+payload_version # integer, defaults to 1
+payload         # hash of payload structure
+```
 
 ## Contributing
 
