@@ -52,7 +52,7 @@ profile = IOSConfig::Profile.new type:           "Configuration",
                                  organization:   "A Company Name",
                                  uuid:           SecureRandom.uuid,
                                  allow_removal:  false,
-                                 client_certs:   [OpenSSL::X509::Certificate.new], # Array of client certificates
+                                 client_certs:   [OpenSSL::X509::Certificate.new(string_with_pem_encoded_cert)], # Array of client certificates
                                  payloads:       payloads # must be an array when type is "Configuration" 
 
 
