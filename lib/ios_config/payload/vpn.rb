@@ -59,7 +59,7 @@ module IOSConfig
 
           case @authentication_method
           when :certificate
-            p_ipsec['AuthenticationMethod'] = 'Certificate'
+            p_ipsec['AuthenticationMethod']   = 'Certificate'
             p_ipsec['PayloadCertificateUUID'] = @certificate_uuid
           when :shared_secret
             p_ipsec['AuthenticationMethod']  = 'SharedSecret'
