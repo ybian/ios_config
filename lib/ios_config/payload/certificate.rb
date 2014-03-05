@@ -31,7 +31,7 @@ module IOSConfig
 
       def payload
         p = { 'PayloadCertificateFileName' => @filename,
-              'PayloadContent' => StringIO.new(Base64.encode64(File.read(@cert_path))),
+              'PayloadContent' => read_cert(@cert_path, @password),
               'PayloadDescription' => @description,
               'PayloadDisplayName' => @displayname,
               'PayloadIdentifier' => @identifier,
@@ -41,6 +41,17 @@ module IOSConfig
         p['Password'] = @password unless @password.blank?
 
         p
+      end
+
+      def read_cert(cert_path, password = nil)
+        data = File.read(cert_path)
+
+        # This will throw an exception if we have an incorrect password
+        if !password.nil?
+          OpenSSL::PKCS12.new(data, password)
+        end
+
+        StringIO.new data
       end
 
       def payload_type
@@ -57,7 +68,6 @@ module IOSConfig
       def payload_version
         @payload_version || super
       end
-
     end
   end
 end
