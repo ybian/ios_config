@@ -17,12 +17,11 @@ module IOSConfig
 
     def initialize(options = {})
       options.each { |k,v| self.send("#{k}=", v) }
-      puts self.allow_removal
-      puts self.allow_removal.nil?
-      self.allow_removal  = true if self.allow_removal.nil?
-      self.type           ||= 'Configuration'
-      self.version        ||= 1
-      self.payloads       ||= []
+
+      @allow_removal  = true if @allow_removal.nil?
+      @type           ||= 'Configuration'
+      @version        ||= 1
+      @payloads       ||= []
     end
   
     def signed(mdm_cert, mdm_intermediate_cert, mdm_private_key)
@@ -38,21 +37,21 @@ module IOSConfig
       raise_if_blank [:version, :uuid, :type, :identifier, :display_name]
     
       profile = {
-        'PayloadDisplayName'        => self.display_name,
-        'PayloadVersion'            => self.version,
-        'PayloadUUID'               => self.uuid,
-        'PayloadIdentifier'         => self.identifier,
-        'PayloadType'               => self.type,
-        'PayloadRemovalDisallowed'  => !self.allow_removal
+        'PayloadDisplayName'        => @display_name,
+        'PayloadVersion'            => @version,
+        'PayloadUUID'               => @uuid,
+        'PayloadIdentifier'         => @identifier,
+        'PayloadType'               => @type,
+        'PayloadRemovalDisallowed'  => !@allow_removal
       }
-      profile['PayloadOrganization']  = self.organization if self.organization
-      profile['PayloadDescription']   = self.description  if self.description
+      profile['PayloadOrganization']  = @organization if @organization
+      profile['PayloadDescription']   = @description  if @description
           
-      if self.client_certs.nil?
-        profile['PayloadContent'] = payloads
+      if @client_certs.nil?
+        profile['PayloadContent'] = @payloads
       else
-        encrypted_payload_content = OpenSSL::PKCS7.encrypt( self.client_certs, 
-                                                            payloads.to_plist, 
+        encrypted_payload_content = OpenSSL::PKCS7.encrypt( @client_certs, 
+                                                            @payloads.to_plist, 
                                                             OpenSSL::Cipher::Cipher::new("des-ede3-cbc"), 
                                                             OpenSSL::PKCS7::BINARY)
       
@@ -65,7 +64,7 @@ module IOSConfig
     private
   
     def raise_if_blank(required_attributes)
-      required_attributes.each { |a| raise "#{a} must be set" if self.send(a).blank? }
+      required_attributes.each { |a| raise "#{a} must be set" if self.send(a).nil?  }
     end
     
   end

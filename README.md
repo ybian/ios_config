@@ -37,7 +37,7 @@ vpn_payload = IOSConfig::Payload::VPN.new connection_name:     "My VPN",
                                           connection_type:     :pptp,
                                           encryption_level:    :auto,
                                           proxy_type:          :none,
-                                          send_all_traffic?    true,
+                                          send_all_traffic:    true,
                                           server:              "example.org",
                                           username:            "macdemarco",
                                           password:            "viceroy"
