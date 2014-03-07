@@ -1,4 +1,5 @@
 # ios_config
+[![Build Status](https://travis-ci.org/tboyko/ios_config.png?branch=master)](https://travis-ci.org/tboyko/ios_config)
 
 This gem provides an easy way to generate profiles and configuration payloads for use with Apple iOS devices. These profiles and payloads can be delivered via Apple MDM or Apple's Configurator or iPhone Configuration Utility (IPCU).
 
