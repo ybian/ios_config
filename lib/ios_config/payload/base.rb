@@ -11,7 +11,7 @@ module IOSConfig
         attributes.each do |name, value|
           begin
             send("#{name}=", value)
-          rescue NoMethodError => e 
+          rescue NoMethodError => e
             raise ArgumentError, %{"#{name}" is not a valid attribute}
           end
         end

@@ -2,7 +2,7 @@ module IOSConfig
   module Payload
     class Custom < Base
 
-      attr_accessor :payload_type, :payload_version, :payload 
+      attr_accessor :payload_type, :payload_version, :payload
 
       def initialize(attributes = {})
         attributes ||= {}

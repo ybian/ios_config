@@ -54,7 +54,7 @@ profile = IOSConfig::Profile.new type:           "Configuration",
                                  uuid:           SecureRandom.uuid,
                                  allow_removal:  false,
                                  client_certs:   [OpenSSL::X509::Certificate.new(string_with_pem_encoded_cert)], # Array of client certificates
-                                 payloads:       payloads # must be an array when type is "Configuration" 
+                                 payloads:       payloads # must be an array when type is "Configuration"
 
 
 # Generate a plist version of the profile, ready for delivery to the device
@@ -85,7 +85,7 @@ profile_plist = profile.signed( [signing_cert_path], [intermediate_path], [key_p
 
 ```ruby
 allow_removal # if profile can be deleted by device user. defaults to true
-description   # (optional) displayed in device settings 
+description   # (optional) displayed in device settings
 display_name  # displayed in device settings
 identifier
 organization  # (optional) displayed in device settings
@@ -156,26 +156,26 @@ payload = IOSConfig::Payload::VPN.new(parameters).build
 Available parameters:
 
 ```ruby
-connection_name    
+connection_name
 authentication_type  # :password, :rsa_securid
 connection_type      # :l2tp, :pptp, :ipsec, :anyconnect, :juniper_ssl, :f5_ssl, :sonicwall_modile_connect, :aruba_via
 encryption_level     # :none, :manual, :auto
-group_name           
+group_name
 prompt_for_password  # true, false
 proxy_type           # :none, :manual, :auto
-proxy_port          
-proxy_server        
+proxy_port
+proxy_server
 send_all_traffic     # true, false
-server               
-proxy_url            
-group_or_domain      
-password             
-username             
-proxy_password      
-proxy_username       
-realm     
-role             
-shared_secret      
+server
+proxy_url
+group_or_domain
+password
+username
+proxy_password
+proxy_username
+realm
+role
+shared_secret
 ```
 
 #### Wi-Fi
@@ -212,7 +212,7 @@ proxy_url
 
 ### Custom Payloads
 
-If you need to create a payload that isn't supported by the library, you can do so using the `IOSConfig::Payload::Custom` class. 
+If you need to create a payload that isn't supported by the library, you can do so using the `IOSConfig::Payload::Custom` class.
 
 The construction of this payload is similar to the ready-made ones with two exceptions: You must specify the payload type and the actual structure of the payload.
 

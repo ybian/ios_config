@@ -1,4 +1,5 @@
 require 'cfpropertylist'
+require 'plist'
 
 module IOSConfig
   class Profile
@@ -23,7 +24,7 @@ module IOSConfig
       @version        ||= 1
       @payloads       ||= []
     end
-  
+
     def signed(mdm_cert, mdm_intermediate_cert, mdm_private_key)
       certificate   = OpenSSL::X509::Certificate.new(File.read(mdm_cert))
       intermediate  = OpenSSL::X509::Certificate.new(File.read(mdm_intermediate_cert))
@@ -46,13 +47,13 @@ module IOSConfig
       }
       profile['PayloadOrganization']  = @organization if @organization
       profile['PayloadDescription']   = @description  if @description
-          
+
       if @client_certs.nil?
         profile['PayloadContent'] = @payloads
       else
-        encrypted_payload_content = OpenSSL::PKCS7.encrypt( @client_certs, 
-                                                            @payloads.to_plist, 
-                                                            OpenSSL::Cipher::Cipher::new("des-ede3-cbc"), 
+        encrypted_payload_content = OpenSSL::PKCS7.encrypt( @client_certs,
+                                                            @payloads.to_plist,
+                                                            OpenSSL::Cipher::Cipher::new("des-ede3-cbc"),
                                                             OpenSSL::PKCS7::BINARY)
 
         profile['EncryptedPayloadContent'] = StringIO.new encrypted_payload_content.to_der
