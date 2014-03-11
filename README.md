@@ -1,4 +1,5 @@
 # ios_config
+[![Build Status](https://travis-ci.org/tboyko/ios_config.png?branch=master)](https://travis-ci.org/tboyko/ios_config)
 
 This gem provides an easy way to generate profiles and configuration payloads for use with Apple iOS devices. These profiles and payloads can be delivered via Apple MDM or Apple's Configurator or iPhone Configuration Utility (IPCU).
 
@@ -37,7 +38,7 @@ vpn_payload = IOSConfig::Payload::VPN.new connection_name:     "My VPN",
                                           connection_type:     :pptp,
                                           encryption_level:    :auto,
                                           proxy_type:          :none,
-                                          send_all_traffic?    true,
+                                          send_all_traffic:    true,
                                           server:              "example.org",
                                           username:            "macdemarco",
                                           password:            "viceroy"
