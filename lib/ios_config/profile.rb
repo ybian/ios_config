@@ -59,7 +59,15 @@ module IOSConfig
         profile['EncryptedPayloadContent'] = StringIO.new encrypted_payload_content.to_der
       end
 
-      format == :binary ? profile.to_plist : Plist::Emit.dump(profile)
+      case format
+      when :binary
+        profile.to_plist
+      when :xml
+        Plist::Emit.dump(profile)
+      else
+        raise ArgumentError, 'unknown format'
+      end
+
     end
 
     private
