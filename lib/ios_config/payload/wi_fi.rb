@@ -37,7 +37,7 @@ module IOSConfig
       def payload
         p = { 'EncryptionType'  => ENCRYPTION_TYPES[@encryption_type] }
 
-        
+
         p['AutoJoin']       = @auto_join unless @auto_join.nil?
         p['HIDDEN_NETWORK'] = @hidden_network unless @hidden_network.nil?
         p['SSID_STR']       = @ssid unless @ssid.nil?
@@ -60,7 +60,7 @@ module IOSConfig
 
         p['ProxyType'] = @proxy_type.to_s.capitalize unless @proxy_type.nil?
 
-        case @proxy_type     
+        case @proxy_type
         when :manual
           p.merge! ({ 'ProxyServer'     => @proxy_server,
                       'ProxyServerPort' => @proxy_port })

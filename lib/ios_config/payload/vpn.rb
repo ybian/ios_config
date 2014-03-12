@@ -2,13 +2,15 @@ module IOSConfig
   module Payload
     class VPN < Base
 
-      attr_accessor :authentication_type, # :password, :rsa_securid
-                    :connection_type,     # :l2tp, :pptp, :ipsec, :anyconnect, :juniper_ssl, :f5_ssl, :sonicwall_modile_connect, :aruba_via
-                    :encryption_level,    # :none, :manual, :auto
+      attr_accessor :authentication_method, # :shared_secret, :certificate
+                    :authentication_type,   # :password, :rsa_securid
+                    :certificate_uuid,      # Certificate UUID. Only used with ipsec and authentication method :certificate
+                    :connection_type,       # :l2tp, :pptp, :ipsec, :anyconnect, :juniper_ssl, :f5_ssl, :sonicwall_modile_connect, :aruba_via
+                    :encryption_level,      # :none, :manual, :auto
                     :group_name,
                     :connection_name,
                     :prompt_for_password,
-                    :proxy_type,          # :none, :manual, :auto
+                    :proxy_type,            # :none, :manual, :auto
                     :proxy_port,
                     :proxy_server,
                     :send_all_traffic,
@@ -43,7 +45,7 @@ module IOSConfig
           p_ipsec['SharedSecret'] = StringIO.new(@shared_secret) unless @shared_secret.blank?
           p['IPSec']  = p_ipsec
           p['PPP']    = generate_ppp_config
-      
+
         when :pptp
           p['VPNType'] = 'PPTP'
           p['PPP'] = generate_ppp_config.merge({  'CPPEnabled'        => @encryption_level != :none,
@@ -53,16 +55,26 @@ module IOSConfig
 
         when :ipsec
           p['VPNType'] = 'IPSec'
-          p_ipsec = { 'AuthenticationMethod'  => 'SharedSecret',
-                      'LocalIdentifierType'   => 'KeyID',
-                      'RemoteAddress'         => @server }
-          p_ipsec['LocalIdentifier'] = @group_name unless @group_name.blank?
-          p_ipsec['SharedSecret']    = StringIO.new(@shared_secret) unless @shared_secret.blank?
+          p_ipsec = { 'RemoteAddress'         => @server }
+
+          case @authentication_method
+          when :certificate
+            p_ipsec['AuthenticationMethod']   = 'Certificate'
+            p_ipsec['PayloadCertificateUUID'] = @certificate_uuid
+          when :shared_secret
+            p_ipsec['AuthenticationMethod']  = 'SharedSecret'
+            p_ipsec['LocalIdentifierType']   = 'KeyID'
+            p_ipsec['LocalIdentifier'] = @group_name unless @group_name.blank?
+            p_ipsec['SharedSecret']    = StringIO.new(@shared_secret) unless @shared_secret.blank?
+          end
+
           unless @username.blank?
             p_ipsec['XAuthEnabled'] = 1
             p_ipsec['XAuthName']    = @username
+            p_ipsec['XAuthPassword'] = @password
+            p_ipsec['XAuthPasswordEncryption'] = 'Prompt' unless @prompt_for_password.blank?
           end
-          p_ipsec['XAuthPasswordEncryption'] = 'Prompt' unless @prompt_for_password.blank?
+
           p['IPSec'] = p_ipsec
 
         when :anyconnect
@@ -79,7 +91,7 @@ module IOSConfig
           vendor_config['Role']   = @role unless @role.blank?
           p['VendorConfig'] = vendor_config
           p['VPN']          = generate_vpn_config
-          
+
         when :f5_ssl
           p['VPNType']      = 'VPN'
           p['VPNSubType']   = 'com.f5.F5-Edge-Client.vpnplugin'
@@ -107,7 +119,7 @@ module IOSConfig
         case @proxy_type
         when :none
           p_proxy = {}
-        
+
         when :manual
           p_proxy = { 'HTTPEnable'  => 1,
                       'HTTPPort'    => @proxy_port,
@@ -118,11 +130,11 @@ module IOSConfig
 
           p_proxy['HTTPProxyUsername'] = @proxy_username unless @proxy_username.blank?
           p_proxy['HTTPProxyPassword'] = @proxy_password unless @proxy_password.blank?
-        
+
         when :auto
           p_proxy = { 'ProxyAutoConfigEnable'     => 1,
                       'ProxyAutoConfigURLString'  => @proxy_url }
-        
+
         end
         p['Proxies'] = p_proxy
 

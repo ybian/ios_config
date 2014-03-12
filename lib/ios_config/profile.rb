@@ -1,11 +1,12 @@
 require 'cfpropertylist'
+require 'plist'
 
 module IOSConfig
   class Profile
     require 'openssl'
 
     attr_accessor :allow_removal, # if profile can be deleted by device user. defaults to true
-                  :description,   # (optional) displayed in device settings 
+                  :description,   # (optional) displayed in device settings
                   :display_name,  # displayed in device settings
                   :identifier,
                   :organization,  # (optional) displayed in device settings
@@ -23,19 +24,19 @@ module IOSConfig
       @version        ||= 1
       @payloads       ||= []
     end
-  
+
     def signed(mdm_cert, mdm_intermediate_cert, mdm_private_key)
       certificate   = OpenSSL::X509::Certificate.new(File.read(mdm_cert))
       intermediate  = OpenSSL::X509::Certificate.new(File.read(mdm_intermediate_cert))
       private_key   = OpenSSL::PKey::RSA.new(File.read(mdm_private_key))
-    
+
       signed_profile = OpenSSL::PKCS7.sign(certificate, private_key, unsigned, [intermediate], OpenSSL::PKCS7::BINARY)
       signed_profile.to_der
     end
-  
-    def unsigned
+
+    def unsigned(format = :binary)
       raise_if_blank [:version, :uuid, :type, :identifier, :display_name]
-    
+
       profile = {
         'PayloadDisplayName'        => @display_name,
         'PayloadVersion'            => @version,
@@ -46,27 +47,25 @@ module IOSConfig
       }
       profile['PayloadOrganization']  = @organization if @organization
       profile['PayloadDescription']   = @description  if @description
-          
+
       if @client_certs.nil?
         profile['PayloadContent'] = @payloads
       else
-        encrypted_payload_content = OpenSSL::PKCS7.encrypt( @client_certs, 
-                                                            @payloads.to_plist, 
-                                                            OpenSSL::Cipher::Cipher::new("des-ede3-cbc"), 
+        encrypted_payload_content = OpenSSL::PKCS7.encrypt( @client_certs,
+                                                            @payloads.to_plist,
+                                                            OpenSSL::Cipher::Cipher::new("des-ede3-cbc"),
                                                             OpenSSL::PKCS7::BINARY)
-      
+
         profile['EncryptedPayloadContent'] = StringIO.new encrypted_payload_content.to_der
       end
 
-      profile.to_plist
+      format == :binary ? profile.to_plist : Plist::Emit.dump(profile)
     end
 
     private
-  
+
     def raise_if_blank(required_attributes)
       required_attributes.each { |a| raise "#{a} must be set" if self.send(a).nil?  }
     end
-    
   end
-
 end

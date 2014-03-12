@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe IOSConfig::Payload::VPN do
-  
+
   subject(:vpn) do
     IOSConfig::Payload::VPN.new connection_name:     "My VPN",
                                 authentication_type: :password,
@@ -14,7 +14,7 @@ describe IOSConfig::Payload::VPN do
                                 password:            "viceroy"
   end
 
-  it 'builds a payload hash' do 
+  it 'builds a payload hash' do
     expect(vpn.build).to be_a_kind_of(Hash)
   end
 
