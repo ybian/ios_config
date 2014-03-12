@@ -34,7 +34,7 @@ module IOSConfig
       signed_profile.to_der
     end
 
-    def unsigned
+    def unsigned(format = :binary)
       raise_if_blank [:version, :uuid, :type, :identifier, :display_name]
 
       profile = {
@@ -59,7 +59,7 @@ module IOSConfig
         profile['EncryptedPayloadContent'] = StringIO.new encrypted_payload_content.to_der
       end
 
-      Plist::Emit.dump(profile)
+      format == :binary ? profile.to_plist : Plist::Emit.dump(profile)
     end
 
     private
