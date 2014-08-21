@@ -5,7 +5,7 @@ module IOSConfig
       attr_accessor :authentication_method, # :shared_secret, :certificate
                     :authentication_type,   # :password, :rsa_securid
                     :certificate_uuid,      # Certificate UUID. Only used with ipsec and authentication method :certificate
-                    :connection_type,       # :l2tp, :pptp, :ipsec, :anyconnect, :juniper_ssl, :f5_ssl, :sonicwall_modile_connect, :aruba_via
+                    :connection_type,       # :l2tp, :pptp, :ipsec, :anyconnect, :juniper_ssl, :f5_ssl, :sonicwall_modile_connect, :aruba_via, :netmotion_mobility
                     :encryption_level,      # :none, :manual, :auto
                     :group_name,
                     :connection_name,
@@ -108,6 +108,13 @@ module IOSConfig
           p['VPNType']      = 'VPN'
           p['VPNSubType']   = 'com.arubanetworks.aruba-via.vpnplugin'
           p['VendorConfig'] = {}
+
+        when :netmotion_mobility
+          p['VPNType']      = 'VPN'
+          p['VPNSubType']   = 'com.netmotionwireless.Mobility.vpnplugin'
+          p['VendorConfig'] = { 'validateServer' => false }
+          p['VPN']          = generate_vpn_config
+
         end
 
         # Send All Traffic
