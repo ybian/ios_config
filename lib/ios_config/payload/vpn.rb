@@ -35,6 +35,10 @@ module IOSConfig
         p = { 'UserDefinedName' => @connection_name,
               'IPv4'            => { 'OverridePrimary' => 1 } }
 
+        # Send All Traffic
+
+        p['OverridePrimary'] = 1 if @send_all_traffic == true
+
         # Connection Type Specifics
 
         case @connection_type
@@ -112,14 +116,14 @@ module IOSConfig
         when :netmotion_mobility
           p['VPNType']      = 'VPN'
           p['VPNSubType']   = 'com.netmotionwireless.Mobility.vpnplugin'
-          p['VendorConfig'] = { 'validateServer' => false }
+          p['VendorConfig'] = { 'validateServer' => 'false' }
           p['VPN']          = generate_vpn_config
 
+          # fixups
+          p['IPv4']['OverridePrimary'] = 0
+          p.delete('OverridePrimary')
+
         end
-
-        # Send All Traffic
-
-        p['OverridePrimary'] = 1 if @send_all_traffic == true
 
         # Proxy
 
