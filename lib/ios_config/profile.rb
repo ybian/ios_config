@@ -27,10 +27,14 @@ module IOSConfig
 
     def signed(mdm_cert, mdm_intermediate_cert, mdm_private_key)
       certificate   = OpenSSL::X509::Certificate.new(File.read(mdm_cert))
-      intermediate  = OpenSSL::X509::Certificate.new(File.read(mdm_intermediate_cert))
+      if mdm_intermediate_cert
+        intermediate = OpenSSL::X509::Certificate.new(File.read(mdm_intermediate_cert))
+      else
+        intermediate = nil
+      end
       private_key   = OpenSSL::PKey::RSA.new(File.read(mdm_private_key))
 
-      signed_profile = OpenSSL::PKCS7.sign(certificate, private_key, unsigned, [intermediate], OpenSSL::PKCS7::BINARY)
+      signed_profile = OpenSSL::PKCS7.sign(certificate, private_key, unsigned(:xml), intermediate, OpenSSL::PKCS7::BINARY)
       signed_profile.to_der
     end
 
